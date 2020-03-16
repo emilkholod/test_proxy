@@ -1,13 +1,16 @@
 import pickle
 
-from flask import Response, jsonify, make_response, request
+from flask import Blueprint, Response, jsonify, make_response, request
+
+from app import R_SERVER, celery
 
 from . import celery_tasks, utils
-from app import R_SERVER, flask_app, celery
+
+bp = Blueprint('proxy', __name__)
 
 
-@flask_app.route('/', defaults={'path': ''})
-@flask_app.route('/<path:path>', methods=utils.ALL_HTTP_METHODS)
+@bp.route('/', defaults={'path': ''})
+@bp.route('/<path:path>', methods=utils.ALL_HTTP_METHODS)
 def proxy(path):
     method = request.method
     hash = utils.get_hash_of_request(method, path)

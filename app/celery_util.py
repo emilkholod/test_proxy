@@ -1,17 +1,12 @@
 import os
 
-from celery import Celery
 
-
-def make_celery(app):
+def init_celery(app, celery):
     if os.name == 'nt':
         os.environ.setdefault('FORKED_BY_MULTIPROCESSING', '1')
-    celery = Celery(
-        app.import_name,
-        backend=app.config['CELERY_RESULT_BACKEND'],
-        broker=app.config['CELERY_BROKER_URL'],
-        include=['app.celery_tasks'],
-    )
+
+    celery.conf['result_backend'] = app.config['CELERY_BROKER_URL']
+    celery.conf['broker_url'] = app.config['CELERY_RESULT_BACKEND']
 
     class ContextTask(celery.Task):
         def __call__(self, *args, **kwargs):
@@ -19,4 +14,3 @@ def make_celery(app):
                 return self.run(*args, **kwargs)
 
     celery.Task = ContextTask
-    return celery
