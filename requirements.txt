@@ -1,5 +1,5 @@
 redis==3.4.1
 requests==2.23.0
 Flask==1.1.1
-celery==4.4.1
+celery==5.2.2
 flower==0.9.3
